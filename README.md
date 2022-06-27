@@ -1,3 +1,3 @@
 # tomgx-dot-com
 
-[tomgx.com](http://tomgx.com).
+## [tomgx.com](http://tomgx.com)
