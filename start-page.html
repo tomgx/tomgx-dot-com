@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html style="background-color: #1a222d">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="png" href="favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.min.css"
+    />
+    <title>Start Page</title>
+    <style>
+      body {
+        background-color: #1a222d;
+        user-select: none;
+      }
+      .search {
+        display: flex;
+        margin: 0 auto;
+        padding: 5px;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 35px;
+      }
+      .search-bar {
+        color: black;
+        font-weight: 600;
+        background-color: rgb(223, 223, 223);
+        padding: 6px;
+        width: 250px;
+      }
+      .search-button {
+        display: flex;
+        margin: auto;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .container {
+        display: flex;
+        justify-content: space-evenly;
+        margin: 0 auto;
+        padding: 25px;
+      }
+      .list {
+        text-align: center;
+      }
+      .links {
+        list-style: none;
+        line-height: 24px;
+      }
+      .title {
+        font-size: 20px;
+        padding-bottom: 5px;
+      }
+      .cat-gif {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+        border-radius: 10%;
+      }
+      .home {
+        font-weight: 600;
+        font-size: 16px;
+        margin: 0;
+        position: absolute;
+        bottom: 2%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <img class="cat-gif" src="cat-gif.gif" alt="cat typing gif" />
+    <div class="search">
+      <form action="http://www.google.com/search" method="get">
+        <input
+          placeholder="Search Google"
+          class="search-bar"
+          type="text"
+          name="q"
+        />
+      </form>
+    </div>
+    <div class="container">
+      <div class="list">
+        <div class="links">
+          <li class="title">Portal</li>
+          <li><a href="https://mail.google.com/mail/u/1/#inbox">Gmail</a></li>
+          <li><a href="https://outlook.live.com/mail/0/">Outlook</a></li>
+          <li>
+            <a href="https://portal.lancaster.ac.uk/portal/my-area/dashboard"
+              >Student Portal</a
+            >
+          </li>
+        </div>
+      </div>
+      <div class="list">
+        <div class="links">
+          <li class="title">Dev</li>
+          <li><a href="https://www.github.com/tomgx">Github</a></li>
+          <li><a href="https://vim.rtorr.com">Vim</a></li>
+          <li><a href="https://devdocs.io/">DevDocs</a></li>
+        </div>
+      </div>
+      <div class="list">
+        <div class="links">
+          <li class="title">Other</li>
+          <li><a href="https://www.smartnator.com">Temp Email</a></li>
+          <li><a href="https://wormhole.app">Wormhole</a></li>
+          <li><a href="https://www.rtings.com">RTINGS</a></li>
+        </div>
+      </div>
+      <div class="list">
+        <div class="links">
+          <li class="title">Media</li>
+          <li><a href="https://www.youtube.com">Youtube</a></li>
+          <li><a href="https://www.twitch.tv">Twitch</a></li>
+          <li><a href="https://www.reddit.com">Reddit</a></li>
+          <li><a href="https://www.animixplay.to">Anime</a></li>
+        </div>
+      </div>
+    </div>
+    <div class="home">
+      <a href="index.html">home</a>
+    </div>
+  </body>
+</html>
