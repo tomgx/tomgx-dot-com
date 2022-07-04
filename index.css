@@ -1,0 +1,27 @@
+body {
+  background-color: #1a222d;
+}
+.code-tag {
+  background-color: #0e1419;
+}
+.cat-img {
+  height: 250px;
+  margin-top: 20px;
+  border-radius: 10%;
+  user-select: none;
+}
+p1 {
+  margin: auto;
+  position: absolute;
+  bottom: 20px;
+  right: 0;
+}
+p2 {
+  margin: auto;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+div {
+  position: relative;
+}
