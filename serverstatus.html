@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html style="background-color: #1a222d">
   <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="png" href="favicon.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.min.css" />
@@ -45,7 +46,7 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
             <h3 style="margin: 0; color: #58a6ff;">${server.name}</h3>
-            <code onclick="copyIp('${server.displayIp}')" style="font-size: 0.75em; cursor: pointer; border: 1px dashed #444; padding: 2px 5px;">${server.displayIp}</code>
+            <code onclick="copyIp('${server.displayIp}', event)" style="font-size: 0.75em; cursor: pointer; border: 1px dashed #444; padding: 2px 5px;">${server.displayIp}</code>
           </div>
           <div id="dot-${safeName}" class="status-dot" style="background: #444;"></div>
         </div>
@@ -110,14 +111,6 @@
               badge.innerHTML = `<img src="https://minotar.net/avatar/${player.name_clean}/16" style="margin-right: 5px; border-radius: 2px;"> ${player.name_clean}`;
               playerListEl.appendChild(badge);
             });
-            
-            const hiddenCount = data.players.online - data.players.list.length;
-            if (hiddenCount > 0) {
-              const note = document.createElement('div');
-              note.style = "width: 100%; font-size: 0.7em; color: #8b949e; text-align: center; margin-top: 5px;";
-              note.innerText = `+ ${hiddenCount} more players`;
-              playerListEl.appendChild(note);
-            }
           }
 
           btn.onclick = () => {
@@ -142,9 +135,9 @@
     }
   }
 
-  function copyIp(ip) {
+  function copyIp(ip, e) {
     navigator.clipboard.writeText(ip);
-    const el = event.target;
+    const el = e.target;
     const oldText = el.innerText;
     el.innerText = "Copied!";
     setTimeout(() => el.innerText = oldText, 1000);
