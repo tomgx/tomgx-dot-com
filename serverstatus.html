@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html style="background-color: #1a222d">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="png" href="favicon.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.min.css" />
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="serverstatus.css" />
+    <title>Server Status</title>
+  </head>
+  <body>
+    <a href="index.html" style="text-decoration: none;">&larr; Back</a>
+    <h1>Minecraft Servers</h1>
+    
+    <div id="servers-container" class="server-grid">
+      <p>Loading servers...</p>
+    </div>
+
+<script>
+  const SERVERS = [
+    { 
+      name: "BetterMC", 
+      fetchIp: "bettermc.tomgx.com:25566", 
+      displayIp: "bettermc.tomgx.com",
+      modpack: "Better MC [FORGE] - BMC4",
+      url: "https://www.curseforge.com/minecraft/modpacks/better-mc-forge-bmc4"
+    },
+    { 
+      name: "RLCraft", 
+      fetchIp: "rlcraftdregora.tomgx.com:25565", 
+      displayIp: "rlcraftdregora.tomgx.com",
+      modpack: "RLCraft Dregora",
+      url: "https://www.curseforge.com/minecraft/modpacks/rlcraft-dregora"
+    }
+  ];
+
+  async function updateAllServers() {
+    const container = document.getElementById('servers-container');
+    container.innerHTML = ''; 
+
+    for (const server of SERVERS) {
+      const safeName = server.name.replace(/\s+/g, '');
+      const card = document.createElement('div');
+      card.className = 'server-card';
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h3 style="margin: 0; color: #58a6ff;">${server.name}</h3>
+            <code onclick="copyIp('${server.displayIp}')" style="font-size: 0.75em; cursor: pointer; border: 1px dashed #444; padding: 2px 5px;">${server.displayIp}</code>
+          </div>
+          <div id="dot-${safeName}" class="status-dot" style="background: #444;"></div>
+        </div>
+        
+        <div style="margin: 15px 0 10px 0; font-size: 0.85em; color: #8b949e;">
+          <span style="display: block; margin-bottom: 4px; color: #d1d5da;">📦 <b>Modpack:</b></span>
+          <a href="${server.url}" target="_blank" class="modpack-link">${server.modpack}</a>
+        </div>
+
+        <p style="margin: 5px 0 5px 0;">Players: <b id="players-${safeName}">-</b></p>
+        
+        <div id="btn-area-${safeName}" style="margin-bottom: 10px;"></div>
+
+        <div id="player-list-${safeName}" style="display: none; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; padding: 10px; background: #0d1117; border-radius: 6px; border: 1px solid #30363d; max-height: 150px; overflow-y: auto;"></div>
+        
+        <p style="margin: 0;">Version: <small id="version-${safeName}">-</small></p>
+        
+        <blockquote id="motd-${safeName}" style="font-size: 0.85em; color: #8b949e; border-left: 2px solid #30363d; margin: 15px 0 10px 0; padding-left: 10px; min-height: 20px;"></blockquote>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+           <img id="icon-${safeName}" src="" style="width: 32px; height: 32px; border-radius: 4px; display: none;">
+           <small id="time-${safeName}" style="color: #484f58; font-size: 0.7em;"></small>
+        </div>
+      `;
+      container.appendChild(card);
+      fetchServerData(server, safeName);
+    }
+  }
+
+  async function fetchServerData(server, safeName) {
+    try {
+      const res = await fetch(`https://api.mcstatus.io/v2/status/java/${server.fetchIp}`);
+      const data = await res.json();
+
+      const dotEl = document.getElementById(`dot-${safeName}`);
+      const playerEl = document.getElementById(`players-${safeName}`);
+      const playerListEl = document.getElementById(`player-list-${safeName}`);
+      const btnArea = document.getElementById(`btn-area-${safeName}`);
+      const versionEl = document.getElementById(`version-${safeName}`);
+      const motdEl = document.getElementById(`motd-${safeName}`);
+      const iconEl = document.getElementById(`icon-${safeName}`);
+      const timeEl = document.getElementById(`time-${safeName}`);
+
+      timeEl.innerText = "Refreshed: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+      if (data.online) {
+        dotEl.style.background = "#2ecc71";
+        dotEl.style.boxShadow = "0 0 8px #2ecc71";
+        playerEl.innerText = `${data.players.online} / ${data.players.max}`;
+        versionEl.innerText = data.version.name_clean;
+        motdEl.innerText = data.motd.clean;
+        
+        if (data.players.online > 0) {
+          btnArea.innerHTML = `<button id="toggle-${safeName}" style="font-size: 0.7em; padding: 4px 8px; cursor: pointer;">Show Player List</button>`;
+          const btn = document.getElementById(`toggle-${safeName}`);
+          
+          playerListEl.innerHTML = '';
+          if (data.players.list && data.players.list.length > 0) {
+            data.players.list.forEach(player => {
+              const badge = document.createElement('div');
+              badge.className = 'player-badge';
+              badge.innerHTML = `<img src="https://minotar.net/avatar/${player.name_clean}/16" style="margin-right: 5px; border-radius: 2px;"> ${player.name_clean}`;
+              playerListEl.appendChild(badge);
+            });
+            
+            const hiddenCount = data.players.online - data.players.list.length;
+            if (hiddenCount > 0) {
+              const note = document.createElement('div');
+              note.style = "width: 100%; font-size: 0.7em; color: #8b949e; text-align: center; margin-top: 5px;";
+              note.innerText = `+ ${hiddenCount} more players`;
+              playerListEl.appendChild(note);
+            }
+          }
+
+          btn.onclick = () => {
+            const isHidden = playerListEl.style.display === 'none';
+            playerListEl.style.display = isHidden ? 'flex' : 'none';
+            btn.innerText = isHidden ? 'Hide Player List' : 'Show Player List';
+          };
+        }
+        if (data.icon) { 
+          iconEl.src = data.icon; 
+          iconEl.style.display = "block"; 
+        }
+      } else {
+        dotEl.style.background = "#e74c3c";
+        playerEl.innerText = "0 / 0";
+        motdEl.innerText = "Server is currently offline.";
+        btnArea.innerHTML = "";
+        playerListEl.style.display = "none";
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  }
+
+  function copyIp(ip) {
+    navigator.clipboard.writeText(ip);
+    const el = event.target;
+    const oldText = el.innerText;
+    el.innerText = "Copied!";
+    setTimeout(() => el.innerText = oldText, 1000);
+  }
+
+  updateAllServers();
+  setInterval(updateAllServers, 60000);
+</script>
+  </body>
+</html>
