@@ -9,7 +9,6 @@
     <title>Server Status</title>
   </head>
   <body>
-  <!--   <a href="/" style="text-decoration: none;">&larr; home</a> -->
     <h1>Minecraft Servers</h1>
     
     <div id="servers-container" class="server-grid">
@@ -34,11 +33,13 @@
     }
   ];
 
-  async function updateAllServers() {
+  let lastUpdatedMinute = -1;
+
+  function initDashboard() {
     const container = document.getElementById('servers-container');
     container.innerHTML = ''; 
 
-    for (const server of SERVERS) {
+    SERVERS.forEach(server => {
       const safeName = server.name.replace(/\s+/g, '');
       const card = document.createElement('div');
       card.className = 'server-card';
@@ -46,9 +47,9 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
           <div>
             <h3 style="margin: 0; color: #58a6ff;">${server.name}</h3>
-            <code onclick="copyIp('${server.displayIp}', event)" style="font-size: 0.75em; cursor: pointer; border: 1px dashed #444; padding: 2px 5px;">${server.displayIp}</code>
+            <code onclick="copyIp('${server.displayIp}', event)" style="font-size: 0.85em; cursor: pointer; border: 1px dashed #444; padding: 2px 5px;">${server.displayIp}</code>
           </div>
-          <div id="dot-${safeName}" class="status-dot" style="background: #444;"></div>
+          <div id="dot-${safeName}" class="status-dot"></div>
         </div>
         
         <div style="margin: 15px 0 10px 0; font-size: 0.85em; color: #8b949e;">
@@ -57,13 +58,10 @@
         </div>
 
         <p style="margin: 5px 0 5px 0;">Players: <b id="players-${safeName}">-</b></p>
-        
         <div id="btn-area-${safeName}" style="margin-bottom: 10px;"></div>
-
         <div id="player-list-${safeName}" style="display: none; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; padding: 10px; background: #0d1117; border-radius: 6px; border: 1px solid #30363d; max-height: 150px; overflow-y: auto;"></div>
         
         <p style="margin: 0;">Version: <small id="version-${safeName}">-</small></p>
-        
         <blockquote id="motd-${safeName}" style="font-size: 0.85em; color: #8b949e; border-left: 2px solid #30363d; margin: 15px 0 10px 0; padding-left: 10px; min-height: 20px;"></blockquote>
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
@@ -72,8 +70,26 @@
         </div>
       `;
       container.appendChild(card);
-      fetchServerData(server, safeName);
+    });
+    
+    updateAllData();
+    setInterval(tick, 1000); 
+  }
+
+  function tick() {
+    const now = new Date();
+    const currentMinute = now.getMinutes();
+    if (currentMinute !== lastUpdatedMinute) {
+      lastUpdatedMinute = currentMinute;
+      updateAllData();
     }
+  }
+
+  async function updateAllData() {
+    SERVERS.forEach(server => {
+      const safeName = server.name.replace(/\s+/g, '');
+      fetchServerData(server, safeName);
+    });
   }
 
   async function fetchServerData(server, safeName) {
@@ -93,15 +109,21 @@
       timeEl.innerText = "Refreshed: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
       if (data.online) {
-        dotEl.style.background = "#2ecc71";
-        dotEl.style.boxShadow = "0 0 8px #2ecc71";
+        dotEl.className = 'status-dot status-online';
         playerEl.innerText = `${data.players.online} / ${data.players.max}`;
         versionEl.innerText = data.version.name_clean;
         motdEl.innerText = data.motd.clean;
         
         if (data.players.online > 0) {
-          btnArea.innerHTML = `<button id="toggle-${safeName}" style="font-size: 0.7em; padding: 4px 8px; cursor: pointer;">Show Player List</button>`;
-          const btn = document.getElementById(`toggle-${safeName}`);
+          if (!document.getElementById(`toggle-${safeName}`)) {
+            btnArea.innerHTML = `<button id="toggle-${safeName}">Show Player List</button>`;
+            const btn = document.getElementById(`toggle-${safeName}`);
+            btn.onclick = () => {
+              const isHidden = playerListEl.style.display === 'none';
+              playerListEl.style.display = isHidden ? 'flex' : 'none';
+              btn.innerText = isHidden ? 'Hide Player List' : 'Show Player List';
+            };
+          }
           
           playerListEl.innerHTML = '';
           if (data.players.list && data.players.list.length > 0) {
@@ -112,23 +134,22 @@
               playerListEl.appendChild(badge);
             });
           }
-
-          btn.onclick = () => {
-            const isHidden = playerListEl.style.display === 'none';
-            playerListEl.style.display = isHidden ? 'flex' : 'none';
-            btn.innerText = isHidden ? 'Hide Player List' : 'Show Player List';
-          };
+        } else {
+          btnArea.innerHTML = "";
+          playerListEl.style.display = "none";
         }
+
         if (data.icon) { 
           iconEl.src = data.icon; 
           iconEl.style.display = "block"; 
         }
       } else {
-        dotEl.style.background = "#e74c3c";
+        dotEl.className = 'status-dot status-offline';
         playerEl.innerText = "0 / 0";
         motdEl.innerText = "Server is currently offline.";
         btnArea.innerHTML = "";
         playerListEl.style.display = "none";
+        iconEl.style.display = "none";
       }
     } catch (err) {
       console.error("Error:", err);
@@ -143,8 +164,7 @@
     setTimeout(() => el.innerText = oldText, 1000);
   }
 
-  updateAllServers();
-  setInterval(updateAllServers, 60000);
+  initDashboard();
 </script>
   </body>
 </html>
