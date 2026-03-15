@@ -46,9 +46,9 @@
   display: flex;
   align-items: center;
   background: #21262d;
-  padding: 2px 8px; /* Original size */
+  padding: 2px 8px;
   border-radius: 15px;
-  font-size: 0.75em; /* Original size */
+  font-size: 0.75em;
   border: 1px solid #30363d;
   color: #c9d1d9;
 }
@@ -61,8 +61,8 @@ button {
   transition: background 0.2s;
   margin-top: 5px;
   cursor: pointer;
-  font-size: 0.7em; /* Original size */
-  padding: 4px 8px !important; /* Original size */
+  font-size: 0.7em;
+  padding: 4px 8px !important;
 }
 
 button:hover {
