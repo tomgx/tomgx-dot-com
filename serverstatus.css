@@ -21,15 +21,34 @@
   width: 10px;
   border-radius: 50%;
   display: inline-block;
+  background: #444;
+  transition: all 0.3s ease;
+}
+
+/* Breathing Glow Animation */
+@keyframes glow-pulse {
+  0% { box-shadow: 0 0 5px 1px rgba(46, 204, 113, 0.4); }
+  50% { box-shadow: 0 0 15px 4px rgba(46, 204, 113, 0.8); }
+  100% { box-shadow: 0 0 5px 1px rgba(46, 204, 113, 0.4); }
+}
+
+.status-online {
+  background: #2ecc71 !important;
+  animation: glow-pulse 3s infinite ease-in-out;
+}
+
+.status-offline {
+  background: #e74c3c !important;
+  box-shadow: 0 0 8px 1px rgba(231, 76, 60, 0.2);
 }
 
 .player-badge {
   display: flex;
   align-items: center;
   background: #21262d;
-  padding: 2px 8px;
+  padding: 2px 8px; /* Original size */
   border-radius: 15px;
-  font-size: 0.75em;
+  font-size: 0.75em; /* Original size */
   border: 1px solid #30363d;
   color: #c9d1d9;
 }
@@ -41,6 +60,9 @@ button {
   border-radius: 6px;
   transition: background 0.2s;
   margin-top: 5px;
+  cursor: pointer;
+  font-size: 0.7em; /* Original size */
+  padding: 4px 8px !important; /* Original size */
 }
 
 button:hover {
